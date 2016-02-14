@@ -47,59 +47,41 @@ public class ConferenceApi {
     // The request that invokes this method should provide data that
     // conforms to the fields defined in ProfileForm
 
-    // TODO 1 Pass the ProfileForm parameter
-    // TODO 2 Pass the User parameter
     public Profile saveProfile(final User user, final ProfileForm form) throws UnauthorizedException {
-
-        String userId = null;
-        String mainEmail = null;
-        String displayName = "Your name will go here";
-        TeeShirtSize teeShirtSize = TeeShirtSize.NOT_SPECIFIED;
-
-        // TODO 2
         // If the user is not logged in, throw an UnauthorizedException
         if (user == null) {
             throw new UnauthorizedException("Authorization required");
         }
 
-        // TODO 1
-        // Set the teeShirtSize to the value sent by the ProfileForm, if sent
-        // otherwise leave it as the default value
-        if (form.getTeeShirtSize() != null) {
-        	teeShirtSize = form.getTeeShirtSize();
-        }
-
-        // TODO 1
-        // Set the displayName to the value sent by the ProfileForm, if sent
-        // otherwise set it to null
-        if (form.getDisplayName() != null) {
-        	displayName = form.getDisplayName();
-        } else {
-        	displayName = null;
-        }
-
-        // TODO 2
-        // Get the userId and mainEmail
-        userId = user.getUserId();
-        mainEmail = user.getEmail();
-
-        // TODO 2
-        // If the displayName is null, set it to default value based on the user's email
-        // by calling extractDefaultDisplayNameFromEmail(...)
-        if (displayName == null) {
-        	displayName = extractDefaultDisplayNameFromEmail(mainEmail);
-        }
-
-        // Create a new Profile entity from the
-        // userId, displayName, mainEmail and teeShirtSize
+        // get the data from profile form
+    	String displayName = form.getDisplayName();
+    	TeeShirtSize teeShirtSize = form.getTeeShirtSize();
+   
+        // check if update is needed or saving
         Profile profile = getProfile(user);
         if (profile == null) {
+        	// creating new profile
+        	String userId = user.getUserId();
+        	String mainEmail = user.getEmail();
+        	
+        	// if no name is provided - create based on email
+            if (displayName == null) {
+            	displayName = extractDefaultDisplayNameFromEmail(mainEmail);
+            }
+            
+            // if no tee shirt size specified - provide NOT_SPECIFIED
+            if (teeShirtSize == null) {
+                teeShirtSize = TeeShirtSize.NOT_SPECIFIED;
+            }
+            
         	profile = new Profile(userId, displayName, mainEmail, teeShirtSize);
         }
         else {
+        	// updating profile
         	profile.update(displayName,teeShirtSize);
         }
 
+        // save profile
         ofy().save().entity(profile).now();
 
         // Return the profile
