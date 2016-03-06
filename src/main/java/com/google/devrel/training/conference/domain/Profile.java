@@ -1,6 +1,7 @@
 package com.google.devrel.training.conference.domain;
 
 import com.google.devrel.training.conference.form.ProfileForm.TeeShirtSize;
+import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
@@ -9,9 +10,8 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-
-// TODO indicate that this class is an Entity
 @Entity
+@Cache
 public class Profile {
 	String displayName;
 	String mainEmail;
